@@ -1,0 +1,10 @@
+# Ignore local audio capture artifacts
+temp_voice_clip.wav
+
+# Ignore Python runtime cache
+__pycache__/
+*.pyc
+
+# Ignore IDE specific files
+.vscode/
+.idea/

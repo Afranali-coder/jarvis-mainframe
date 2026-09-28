@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS Mainframe</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="/eel.js"></script>
+</head>
+<body>
+    <div class="sidebar-container" id="main-container">
+        <canvas id="matrix-canvas"></canvas>
+        <div class="hologram-scanner" id="laser-bar"></div>
+        <div class="telemetry-header">
+            <div class="time-block" id="live-time">00:00:00</div>
+            <div class="date-block" id="live-date">SECURE MATRIX</div>
+            <div class="ping-block">GRID PING: <span id="live-ping">12</span>ms</div>
+        </div>
+        
+        <div class="persona-panel-row">
+            <select id="ai-persona" onchange="updateSystemPersona()">
+                <option value="jarvis">🤖 JARVIS CENTRAL NODE</option>
+                <option value="jee_mentor">📐 IIT-JEE ACADEMIC MENTOR</option>
+                <option value="pa">💼 PERSONAL WORK ASSISTANT</option>
+                <option value="coder">⚡ SOFTWARE ARCHITECT ENGINE</option>
+                <option value="custom">⚙️ CUSTOM INJECTED MODE</option>
+            </select>
+        </div>
+        <div class="prompt-override-row" style="display: flex; gap: 6px; margin-bottom: 12px; z-index: 2; width: 100%;">
+            <input type="text" id="custom-role-input" placeholder="Inject custom role prompt instructions here..." style="flex: 1; background: rgba(2, 4, 8, 0.8); border: 1px solid var(--border-glow); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 10px; border-radius: 4px; outline: none;">
+            <button onclick="injectCustomRole()" style="background: rgba(4, 15, 30, 0.6); border: 1px solid var(--border-glow); color: var(--neon-cyan); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 11px; padding: 0 14px; border-radius: 4px; cursor: pointer;">INJECT</button>
+        </div>
+
+        <div class="blackhole-section">
+            <div class="hud-panel hud-left">
+                <div class="hud-label">GRID STATUS</div>
+                <div class="hud-value" id="hud-left-val">SECURE</div>
+                <div class="hud-graphic-bar"><div class="hud-fill" id="hud-left-fill" style="width: 85%"></div></div>
+            </div>
+            <div class="blackhole-singularity" id="blackhole">
+                <svg class="jarvis-logo" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" stroke="#00f3ff" stroke-width="1.5" fill="none" opacity="0.3" stroke-dasharray="3,3" id="arc-1"/>
+                    <circle cx="50" cy="50" r="35" stroke="#00f3ff" stroke-width="2" fill="none" opacity="0.6" id="arc-2"/>
+                    <circle cx="50" cy="50" r="22" stroke="#00f3ff" stroke-width="1" fill="none" opacity="0.4" id="arc-3"/>
+                    <circle cx="50" cy="50" r="10" fill="#00f3ff" filter="drop-shadow(0 0 8px #00f3ff)" id="arc-core"/>
+                    <g stroke="#00f3ff" stroke-width="3" opacity="0.9" stroke-dasharray="12,6" id="arc-ring"><circle cx="50" cy="50" r="28" fill="none"/></g>
+                </svg>
+                <canvas id="wave-canvas" width="180" height="140"></canvas>
+            </div>
+            <div class="hud-panel hud-right">
+                <div class="hud-label">VECTOR SC</div>
+                <div class="hud-value" id="hud-right-val">0x4F9A</div>
+                <div class="hud-graphic-bar"><div class="hud-fill" id="hud-right-fill" style="width: 60%"></div></div>
+            </div>
+            <div class="status-text" id="status">SYSTEM: READY</div>
+        </div>
+        <!-- INTEGRATED HIGH-YIELD DYNAMIC REVISION ENGINE LAYER -->
+        <div id="jee-revision-hub" style="display: none; background: rgba(2, 6, 16, 0.9); border: 1px solid var(--border-glow); padding: 12px; border-radius: 6px; margin-bottom: 12px; max-height: 240px; overflow-y: auto; z-index: 2; box-shadow: 0 0 15px rgba(0,243,255,0.05);">
+            <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                <button onclick="switchPCMPanel('physics')" style="flex:1; background:rgba(59,130,246,0.15); color:#3b82f6; border:1px solid #3b82f6; padding:6px; cursor:pointer; font-family:'Orbitron'; font-size:11px; border-radius:3px; font-weight:bold;">🌌 PHY</button>
+                <button onclick="switchPCMPanel('chemistry')" style="flex:1; background:rgba(34,197,94,0.15); color:#22c55e; border:1px solid #22c55e; padding:6px; cursor:pointer; font-family:'Orbitron'; font-size:11px; border-radius:3px; font-weight:bold;">🧪 CHE</button>
+                <button onclick="switchPCMPanel('maths')" style="flex:1; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid #ef4444; padding:6px; cursor:pointer; font-family:'Orbitron'; font-size:11px; border-radius:3px; font-weight:bold;">📐 MTH</button>
+            </div>
+            <input type="text" id="jee-search-input" placeholder="Filter micro-notes..." onkeyup="filterLocalNotes()" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid var(--border-glow); color:#fff; font-family:'Share Tech Mono'; padding:6px; border-radius:4px; font-size:12px; outline:none; margin-bottom:8px;">
+            <div id="pcm-notes-content" style="font-size: 13px; color: #cbd5e1; font-family: 'Share Tech Mono'; line-height:1.4;"></div>
+        </div>
+
+        <div class="chat-section" id="chat-box">
+            <div class="msg ai">Mainframe active, Sir. Ready for IIT-JEE target metrics navigation.</div>
+        </div>
+
+        <div class="dashboard-section">
+            <div class="audio-spectrum" id="spectrum-nodes">
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+            </div>
+            
+            <div class="prompt-override-row" style="margin-top: -5px; margin-bottom: 5px; width: 100%;">
+                <button id="mic-trigger-btn" onclick="activateVoiceProcessingPipeline()" style="width: 100%; height: 38px; background: rgba(0, 243, 255, 0.05); border: 1px solid var(--border-glow); color: var(--neon-cyan); font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 11px; border-radius: 4px; cursor: pointer; transition: all 0.3s;">🎙️ INITIALIZE INTENT VOICE RECORDER SYSTEM</button>
+            </div>
+            
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Transmit protocol command, Sir..." onkeydown="if(event.key === 'Enter') sendQuery()">
+                <button onclick="sendQuery()" id="send-btn">➔</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const blackhole = document.getElementById('blackhole');
+        const statusText = document.getElementById('status');
+        const canvas = document.getElementById('wave-canvas');
+        const ctx = canvas.getContext('2d');
+        const eqBars = document.getElementsByClassName('eq-bar');
+        let isSpeaking = false;
+        let activePCMSubject = 'physics';
+
+        function updateSystemPersona() {
+            const chosenType = document.getElementById('ai-persona').value;
+            const jeeHub = document.getElementById('jee-revision-hub');
+            if (chosenType === "jee_mentor") {
+                jeeHub.style.display = "block";
+                switchPCMPanel('physics');
+            } else {
+                jeeHub.style.display = "none";
+            }
+            playChime(); 
+            eel.change_ai_persona_type(chosenType, "");
+        }
+
+        function switchPCMPanel(subject) {
+            activePCMSubject = subject;
+            eel.fetch_embedded_notes(subject)((data) => {
+                document.getElementById('pcm-notes-content').innerHTML = data;
+            });
+        }
+
+        function filterLocalNotes() {
+            const query = document.getElementById('jee-search-input').value.toLowerCase();
+            const elements = document.querySelectorAll('#pcm-notes-content .note-item');
+            elements.forEach(el => {
+                el.style.display = el.innerText.toLowerCase().includes(query) ? "block" : "none";
+            });
+        }
+
+        function injectCustomRole() {
+            const textPrompt = document.getElementById('custom-role-input').value.trim();
+            if(!textPrompt) return;
+            playChime(); document.getElementById('ai-persona').value = "custom";
+            eel.change_ai_persona_type("custom", textPrompt);
+            document.getElementById('custom-role-input').value = "";
+            appendMessage("System Instruction Override Injected Successfully.", "ai");
+        }
+
+        function activateVoiceProcessingPipeline() {
+            const btn = document.getElementById('mic-trigger-btn'); 
+            btn.innerText = "🎙️ RECORDING SIGNAL ACTIVE (5s)...";
+            btn.style.borderColor = "var(--neon-orange)"; btn.style.color = "var(--neon-orange)";
+            eel.capture_voice_input()((audioText) => {
+                btn.innerText = "🎙️ INITIALIZE INTENT VOICE RECORDER SYSTEM";
+                btn.style.borderColor = "var(--border-glow)"; btn.style.color = "var(--neon-cyan)";
+                if (audioText && audioText.trim() !== "") { 
+                    appendMessage(audioText, 'user'); eel.process_user_input(audioText); 
+                }
+            });
+        }
+
+        function playChime() {
+            try {
+                let context = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = context.createOscillator(); let gain = context.createGain();
+                osc.type = "sine"; osc.frequency.setValueAtTime(1200, context.currentTime);
+                gain.gain.setValueAtTime(0.04, context.currentTime); gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.05);
+                osc.connect(gain); gain.connect(context.destination); osc.start(); osc.stop(context.currentTime + 0.05);
+            } catch(e) {}
+        }
+
+        function updateTelemetryHUD() {
+            const now = new Date(); document.getElementById('live-time').innerText = now.toTimeString().split(' ')[0];
+            document.getElementById('live-date').innerText = now.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+            document.getElementById('live-ping').innerText = Math.floor(Math.random() * 8) + 12;
+        }
+        setInterval(updateTelemetryHUD, 1000); updateTelemetryHUD();
+
+        function updateLiveHardwareHUD() {
+            if (typeof eel === 'undefined') return;
+            eel.get_system_telemetry()((data) => {
+                document.getElementById('hud-left-val').innerText = `CPU: ${data.cpu}%`; document.getElementById('hud-right-val').innerText = `RAM: ${data.ram}%`;
+                document.getElementById('hud-left-fill').style.width = `${data.cpu}%`; document.getElementById('hud-right-fill').style.width = `${data.ram}%`;
+                if (data.status === "OVERLOAD") { statusText.innerText = "SYSTEM: CRITICAL HEAVY LOAD"; statusText.style.color = "var(--neon-orange)"; }
+                else if (!isSpeaking) { statusText.innerText = "SYSTEM: READY"; statusText.style.color = "var(--neon-cyan)"; }
+            });
+        }
+        setInterval(updateLiveHardwareHUD, 2000);
+
+        const mCanvas = document.getElementById('matrix-canvas'); const mCtx = mCanvas.getContext('2d');
+        const matrixChars = "010101XYZΩΨΦ01"; const fontSize = 14; let columns = 0; let drops = [];
+        function resizeMatrix() {
+            mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
+            columns = Math.floor(mCanvas.width / fontSize) + 1;
+            while (drops.length < columns) { drops.push(Math.floor(Math.random() * -20)); }
+        }
+        resizeMatrix(); window.addEventListener('resize', resizeMatrix);
+
+        function drawMatrixRain() {
+            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height); mCtx.font = "bold " + fontSize + "px 'Share Tech Mono'";
+            mCtx.fillStyle = isSpeaking ? "rgba(255, 106, 0, 0.15)" : "rgba(0, 243, 255, 0.15)";
+            for (let i = 0; i < columns; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)]; mCtx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > mCanvas.height && Math.random() > 0.975) { drops[i] = 0; } drops[i]++;
+            }
+        }
+        setInterval(drawMatrixRain, 30);
+
+        const particles = []; const numParticles = 40;
+        for(let i=0; i<numParticles; i++) {
+            particles.push({ angle: Math.random() * Math.PI * 2, radius: 45 + Math.random() * 25, speed: 0.02 + Math.random() * 0.03, size: 1 + Math.random() * 1.5, opacity: 0.2 + Math.random() * 0.6 });
+        }
+
+        function renderMatrixFrame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); const cx = canvas.width / 2; const cy = canvas.height / 2;
+            particles.forEach(p => {
+                let currentSpeed = isSpeaking ? p.speed * 2.5 : p.speed; p.angle += currentSpeed;
+                let px = cx + Math.cos(p.angle) * p.radius * 1.1; let py = cy + Math.sin(p.angle) * p.radius * 0.7;
+                ctx.beginPath(); ctx.arc(px, py, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = isSpeaking ? `rgba(255, 106, 0, ${p.opacity})` : `rgba(0, 243, 255, ${p.opacity})`; ctx.fill();
+            });
+            requestAnimationFrame(renderMatrixFrame);
+        }
+        renderMatrixFrame();
+
+        eel.expose(add_user_message_to_chat); function add_user_message_to_chat(text) { appendMessage(text, 'user'); }
+        eel.expose(add_ai_message_to_chat); function add_ai_message_to_chat(text) { appendMessage(text, 'ai'); }
+        eel.expose(set_status_display);
+        function set_status_display(statusMsg) {
+            statusText.innerText = statusMsg;
+            if (statusMsg.includes("COMPUTING")) { blackhole.className = "blackhole-singularity processing"; isSpeaking = false; }
+            else if (statusMsg.includes("SPEAKING")) { blackhole.className = "blackhole-singularity speaking"; isSpeaking = true; }
+            else { blackhole.className = "blackhole-singularity"; isSpeaking = false; }
+        }
+
+        function appendMessage(text, sender) {
+            const msg = document.createElement('div'); msg.classList.add('msg', sender); msg.innerText = text;
+            chatBox.appendChild(msg); chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendQuery() {
+            const text = userInput.value.trim(); if (!text) return;
+            appendMessage(text, 'user'); userInput.value = ''; eel.process_user_input(text);
+        }
+    </script>
+</body>
+</html>
